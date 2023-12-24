@@ -7,14 +7,14 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 public class DbConnectSample01 {
 
     public static void main(String[] args) {
         // 3. データベース接続と結果取得のための変数宣言
         Connection con = null;
-        Statement stmt = null;
+        PreparedStatement preparedStatement = null;
         ResultSet rs = null;
 
         try {
@@ -27,13 +27,16 @@ public class DbConnectSample01 {
                     "Sakura361000$"
                 );
             // 4. DBとやりとりする窓口（Statementオブジェクト）の作成
-            stmt = con.createStatement();
             // 5, 6. Select文の実行と結果を格納／代入
-                       System.out.print("検索キーワードを入力してください > ");
+
+            System.out.print("検索キーワードを入力してください > ");
             String keyword = keyIn();
 
-            String sql = "SELECT * FROM person WHERE id LIKE '%" + keyword + "%' LIMIT 50";
-            rs = stmt.executeQuery(sql);
+            String sql = "SELECT * FROM person WHERE id LIKE ? LIMIT 50";
+            preparedStatement = con.prepareStatement(sql);
+            preparedStatement.setString(1, "%" + keyword + "%");
+
+            rs = preparedStatement.executeQuery();
 
 
             // 7. 結果を表示する
