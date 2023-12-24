@@ -20,7 +20,7 @@ public class DbConnectSample01 {
         try {
             // 1. ドライバのクラスをJava上で読み込む
             Class.forName("com.mysql.cj.jdbc.Driver");
-            // 2. DBと接続する
+            // 2. DBと接続
             con = DriverManager.getConnection(
                     "jdbc:mysql://localhost/kadaidb?useSSL=false&allowPublicKeyRetrieval=true",
                     "root",
@@ -32,17 +32,18 @@ public class DbConnectSample01 {
             System.out.print("検索キーワードを入力してください > ");
             String keyword = keyIn();
 
-            String sql = "SELECT * FROM person WHERE id LIKE ? LIMIT 50";
+            String sql = "SELECT * FROM person WHERE id = ?";
             preparedStatement = con.prepareStatement(sql);
-            preparedStatement.setString(1, "%" + keyword + "%");
 
+            int id = Integer.parseInt(keyword);
+            preparedStatement.setInt(1, id);
             rs = preparedStatement.executeQuery();
 
 
             // 7. 結果を表示する
             while( rs.next() ){
                 // Name列の値を取得
-                String name = rs.getString("Name");
+                String name = rs.getString("name");
              // age列の値を取得 　← 追記
                 int age = rs.getInt("age");  // ← 追記
                 // 取得した値を表示
@@ -80,12 +81,12 @@ public class DbConnectSample01 {
      */
     private static String keyIn() {
         String line = null;
-        try {
-            BufferedReader key = new BufferedReader(new InputStreamReader(System.in));
+        try (BufferedReader key = new BufferedReader(new InputStreamReader(System.in))) {
             line = key.readLine();
         } catch (IOException e) {
-
+            e.printStackTrace();
         }
         return line;
+
     }
     }
